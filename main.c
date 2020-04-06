@@ -145,6 +145,8 @@ int main(void)
             err = write(local.pipe_fd, send, MSG_SIZE-2); // Write it
             printf("Sent > %s\n", send); // Display what we sent
         }
+
+        usleep(100);
     }
 
     return EXIT_SUCCESS;

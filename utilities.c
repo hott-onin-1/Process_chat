@@ -23,7 +23,7 @@ void display_intro(void)
 {
     system("clear");
     printf("\n=====================================================\n\n");
-    printf("Welcome in Ultra Process Chat 0.1\n");
+    printf("Welcome in Process-Chat 0.1\n");
     printf("Use Ctrl+C to quit\n");
     printf("\n=====================================================\n\n");
 }
