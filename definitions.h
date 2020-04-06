@@ -12,11 +12,11 @@
 #define FILE_PATH "/tmp/file.fifo.X"
 #define X_POS 15
 #define MSG_SIZE 100
+#define POLLING_PERIOD 100
 
 typedef enum State
 {
     INIT,
-    NO_STOP,
     RUNNING,
     CLOSING
 } t_state;

@@ -17,8 +17,10 @@ int main(void)
     sprintf(local.file_name, FILE_PATH);
     sprintf(remote.file_name, FILE_PATH);
 
+    remote.pipe_fd = -1;
+    local.pipe_fd = -1;
 
-    state = NO_STOP;
+    state = INIT;
     local.pid = getpid();
 
     signal(SIGUSR1, handle_signals);
@@ -30,6 +32,7 @@ int main(void)
     if(local.id == -1)
     {
         fprintf(stderr, "find_file: Couldn't create fifo pipe file\n");
+        printf("\nTerminated!\n");
         exit(EXIT_FAILURE);
     }
 
@@ -40,14 +43,13 @@ int main(void)
 
     printf("Local id is \"%d\"\n", local.id);
 
-    state = INIT;
     remote.id = -1;
     while(remote.id == -1)
     {
         printf("Id of remote client (0 -> 9)?\n");
 
         err = read(STDIN_FILENO, buf, sizeof(buf));
-        check_error(err, "read1");
+        check_error(err, "read stdin");
 
         if(buf[1] != '\n')
         {
@@ -67,18 +69,19 @@ int main(void)
     }
     printf("\n");
 
+    remote.file_name[X_POS] = '0' + remote.id;
+    fprintf(stderr, "Remote file name: *%s*\n", remote.file_name);
+    fprintf(stderr, "Local file name: *%s*\n", local.file_name);
+
     if(remote.id > local.id)
     {
         printf("Waiting for a connexion...\n");
-        remote.file_name[X_POS] = '0' + remote.id;
         remote.pipe_fd = open(remote.file_name, O_RDONLY); // Blocking call
-        check_error(local.pipe_fd, "open");
-
-        state = NO_STOP;
+        check_error(remote.pipe_fd, "open remote");
 
         printf("Setting connexion...\n");
         local.pipe_fd = open(local.file_name, O_WRONLY); // Should not block
-        check_error(local.pipe_fd, "open");
+        check_error(local.pipe_fd, "open local");
 
         printf("Authentification...\n");
         err = write(local.pipe_fd, &(local.pid), sizeof(int));
@@ -91,14 +94,11 @@ int main(void)
     {
         printf("Waiting for a connexion...\n");
         local.pipe_fd = open(local.file_name, O_WRONLY); // Blocking call
-        check_error(local.pipe_fd, "open");
-
-        state = NO_STOP;
+        check_error(local.pipe_fd, "open local");
 
         printf("Setting connexion...\n");
-        remote.file_name[X_POS] = '0' + remote.id;
         remote.pipe_fd = open(remote.file_name, O_RDONLY); // Should not block
-        check_error(local.pipe_fd, "open");
+        check_error(remote.pipe_fd, "open remote");
 
         printf("Authentification...\n");
         err = read(remote.pipe_fd, &(remote.pid), sizeof(int));
@@ -146,8 +146,9 @@ int main(void)
             printf("Sent > %s\n", send); // Display what we sent
         }
 
-        usleep(100);
+        usleep(POLLING_PERIOD);
     }
 
-    return EXIT_SUCCESS;
+    fprintf(stderr, "Unexpected: Reached end\n");
+    terminate(0);
 }

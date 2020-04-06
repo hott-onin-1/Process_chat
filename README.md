@@ -34,6 +34,6 @@ Each instance will display its **id** on startup. To start chating, enter the **
 
 ![connecting](images/connexion.png)
 
-Do the same for the remote instance. Once both instances are successfully connected, ou may start chating:
+Do the same for the remote instance. Once both instances are successfully connected, you may start chating:
 
 ![connected](images/connected.png)

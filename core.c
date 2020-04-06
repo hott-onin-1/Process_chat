@@ -7,18 +7,23 @@ void handle_signals(int sig)
     {
         case SIGUSR1:
         {
-            if(state == CLOSING) return;
-            if(state != RUNNING)
+            switch(state)
             {
+                case CLOSING:
+                return;
+
+                case INIT:
                 fprintf(stderr, "Received SIGUSR1 in unexpected state!\n");
-                exit(EXIT_FAILURE);
+                terminate(0);
+
+                case RUNNING:
+                printf("Remote client asked for termination!\n");
+                terminate(1);
+
+                default:
+                fprintf(stderr, "handle_signals: Unknow state!\n");
+                terminate(0);
             }
-            state = CLOSING;
-            printf("\nRemote client asked for termination!\n");
-            printf("Terminating...\n");
-            my_close();
-            sleep(1); // Waiting for remote to close
-            my_clean();
         }
         break;
 
@@ -27,26 +32,18 @@ void handle_signals(int sig)
             switch(state)
             {
                 case CLOSING:
-                case NO_STOP:
                 return;
 
-                case RUNNING:
-                state = CLOSING;
-                printf("\n\nTerminating...\n");
-                my_close();
-                kill(remote.pid, SIGUSR1);
-                sleep(1); // Waiting for remote to close
-                my_clean(); // Will terminate, no break needed
-                // break;
-
                 case INIT:
-                printf("\n\nTerminating...\n");
-                my_clean(); // Will terminate, no break needed
-                // break;
+                terminate(1);
+
+                case RUNNING:
+                kill(remote.pid, SIGUSR1);
+                terminate(1);
 
                 default:
                 fprintf(stderr, "handle_signals: Unknow state!\n");
-                exit(EXIT_FAILURE);
+                terminate(0);
             }
         }
         break;
@@ -54,7 +51,7 @@ void handle_signals(int sig)
         default:
         {
             fprintf(stderr, "handle_signals: Received unknown signal!\n");
-            exit(EXIT_FAILURE);
+            terminate(0);
         }
     }
 }
