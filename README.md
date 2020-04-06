@@ -30,7 +30,7 @@ Provided no error occured, the following output should appear in the terminal:
 
 ![starting program](images/starting.png)
 
-Each instance will display its **id** on startup. To start chating, enter the **id** of the instance you want to etablish a connexion with.
+Each instance will display its **ID** on startup. To start chating, enter the **ID** of the instance you want to etablish a connexion with.
 
 ![connecting](images/connexion.png)
 

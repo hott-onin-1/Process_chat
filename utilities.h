@@ -12,8 +12,8 @@ Inter-process chat application for Operating Systems classes
 
 /**
  * \file utilities.h
- * \brief Process Chat application
- * \version 0.2
+ * \brief Header for Utilities fuctions
+ * \version 1.0
  * \date April 2020
 */
 
@@ -67,6 +67,7 @@ void my_clean(void);
  *
  * \param pipe_name generic name of the file
  * \param number_pos position of the character to be replace by a number
+ * \return return the ID for the fifo file (-1 if error)
  */
 int find_file(char pipe_name[], int number_pos);
 
@@ -77,10 +78,10 @@ int find_file(char pipe_name[], int number_pos);
 void stdin_flush(void);
 
 /**
- * \fn void terminate(int sucess)
+ * \fn void terminate(int context)
  * \brief Close pipes, clean files and terminate
- * \param success Close on success or not (1 or 0)
+ * \param context 0: failure. 1: success. 2: success and send SIGUSR1 to remote
  */
-void terminate(int sucess);
+void terminate(int context);
 
 #endif // UTILITIES_H

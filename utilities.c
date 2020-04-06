@@ -12,8 +12,8 @@ Inter-process chat application for Operating Systems classes
 
 /**
  * \file utilities.c
- * \brief Process Chat application
- * \version 0.2
+ * \brief Utilities fuctions
+ * \version 1.0
  * \date April 2020
 */
 
@@ -22,8 +22,12 @@ File: utilities.c
 Contains the utilities functions
 */
 
+// Local includes
 #include "definitions.h"
 #include "utilities.h"
+
+// External variables:
+extern t_client remote, local;  // Messages will be exchanged between 2 clients: remote, local
 
 // Parse a string and terminate it properly with \n and \0
 void search_and_clean(char str[], int len)
@@ -44,7 +48,7 @@ void check_error(const int err, const char str[])
     if(err == -1)
     {
         perror(str);
-        terminate(0);
+        terminate(FAILURE);
     }
 }
 
@@ -53,7 +57,7 @@ void display_intro(void)
 {
     system("clear");
     printf("\n=====================================================\n\n");
-    printf("Welcome in Process-Chat 0.2\n");
+    printf("Welcome in Process-Chat 1.0\n");
     printf("Use Ctrl+C to quit\n");
     printf("\n=====================================================\n\n");
 }
@@ -102,7 +106,7 @@ int find_file(char pipe_name[], int number_pos)
 
         if(access(pipe_name, F_OK) == -1)   // If file doesn't exist yet, name is free
         {
-            return i;                       // Return id
+            return i;                       // Return ID
         }
     }
     return -1;                              // Else error
@@ -119,13 +123,17 @@ void stdin_flush(void)
 }
 
 // Terminate
-void terminate(int sucess)
+void terminate(int context)
 {
+    // Clean and close
     state = CLOSING;                // Update state
     printf("\nTerminating...\n");
     my_close();                     // Close pipes
+    if(context == 2) kill(remote.pid, SIGUSR1);
     usleep(500);                    // Waiting for remote to close
     my_clean();                     // Clean fifo file
     printf("Terminated!\n");
-    exit(sucess? EXIT_SUCCESS : EXIT_FAILURE);
+
+    // Exit. Failure if context = 0
+    exit(context? EXIT_SUCCESS : EXIT_FAILURE);
 }
