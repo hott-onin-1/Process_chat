@@ -37,3 +37,9 @@ Each instance will display its **ID** on startup. To start chating, enter the **
 Do the same for the remote instance. Once both instances are successfully connected, you may start chating:
 
 ![connected](images/connected.png)
+
+### Closing a client
+
+Use **Ctrl+C** if you want to close the program. If the client is connected when you close it, remote client will be closed as well:
+
+![termination](images/termination.png)
